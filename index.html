@@ -35,7 +35,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .toolbar { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; gap: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); justify-content: center; }
+        .toolbar { background: white; padding: 5px; margin-bottom: 10px; border-radius: 8px; display: flex; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); justify-content: center; }
         
         #paper { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
@@ -63,7 +63,52 @@
         .title-line input { border: none !important; font-size: 13pt; font-weight: bold; padding: 5px 0; background: transparent !important; }
         
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-pdf { background: #27ae60; color: white; }
+      /* Questa classe la condividono entrambi per la forma */
+.btn-pdf {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #d1d5db;
+    padding: 4px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin: 10px;
+}
+
+/* Colore specifico per il tasto Salva (Azzurro delicato) */
+.btn-save {
+    background-color: #e3f2fd;
+    border-color: #bbdefb;
+    color: #1976d2;
+}
+
+.btn-save:hover {
+    background-color: #bbdefb;
+    border-color: #1976d2;
+}
+
+
+.btn-pdf .icon {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.btn-pdf:hover {
+    background-color: #e2e8f0;
+    border-color: #4a90e2; /* Un tocco di azzurro al passaggio */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.btn-pdf:active {
+    transform: translateY(0);
+}
+
         .btn-clone { background: #8e44ad; color: white; }
         .btn-add { background: #3498db; color: white; width: 100%; margin-top: 15px; }
         .btn-del { background: #e74c3c; color: white; font-size: 8pt; padding: 4px 8px; }
@@ -100,25 +145,36 @@ body.exporting .sub-box * { display: block; }
 [contenteditable]:empty:before { content: attr(data-placeholder); color: #999; }
 body.exporting [contenteditable] { border: none !important; background: transparent !important; padding: 2px 0 !important; }
     </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+
 </head>
 <body id="main-body">
 
 <div class="toolbar">
-    <button class="btn btn-pdf" onclick="generaPDF()">📄 GENERA PDF</button>
-    <button class="btn btn-clone" onclick="clona()">🔗 SALVA</button>
+    <button onclick="generaPDFProgrammatico()" class="btn-pdf">
+    <span class="icon">📄</span> Genera PDF
+</button>
+
+
+    <button onclick="clona()" class="btn-pdf btn-save">
+    <span class="icon">💾</span> Salva File
+</button>
+
 </div>
 
 <div id="paper">
-    <h1 id="titolo-principale">Adunanza del Corpo Anziani di <input type="text" id="nome-congregazione" value="inserire congregazione" style="display:inline; width:auto; min-width:150px; border:none; border-bottom:2px solid #333; border-radius:0; font-size:16pt; font-weight:bold; text-transform:uppercase; text-align:left; padding:0 5px; background:transparent; font-family:'Segoe UI',sans-serif;"></h1>
+    <h1 id="titolo-principale">Adunanza del Corpo Anziani di <input type="text" id="nome-congregazione" value="" style="display:inline; width:auto; min-width:150px; border:none; border-bottom:2px solid #333; border-radius:0; font-size:16pt; font-weight:bold; text-transform:uppercase; text-align:left; padding:0 5px; background:transparent; font-family:'Segoe UI',sans-serif;"></h1>
 
     <div class="row">
         <div class="col w-50">
             <label>Data</label>
-            <input type="text" placeholder="Lunedì 19 Gennaio 2026">
+            <input type="text" placeholder=>
         </div>
         <div class="col w-50">
             <label>Luogo</label>
-            <input type="text" placeholder="Luogo dell'adunanza...">
+            <input type="text" placeholder=>
         </div>
     </div>
 
@@ -162,7 +218,7 @@ body.exporting [contenteditable] { border: none !important; background: transpar
                 </div>
                 <div class="title-line">
                     <label style="margin-right:10px">Argomento</label>
-                    <input type="text" placeholder="Inserisci titolo...">
+                    <input type="text" placeholder="[...">
                 </div>
                 <div class="row">
                     <div class="col w-60">
@@ -179,7 +235,7 @@ body.exporting [contenteditable] { border: none !important; background: transpar
                     </div>
                 </div>
                 <div id="subs_${id}"></div>
-                <button class="btn" style="font-size:8pt; background:#eee; margin-top:10px" onclick="aggiungiSottopunto('${id}')">+ Sotto-dettaglio</button>
+                <button class="btn" style="font-size:8pt; background:#eee; margin-top:10px" onclick="aggiungiSottopunto('${id}')">+ sottotitolo</button>
             </div>
         `;
         document.getElementById('contenitore-argomenti').insertAdjacentHTML('beforeend', html);
@@ -205,87 +261,154 @@ body.exporting [contenteditable] { border: none !important; background: transpar
         const html = `
             <div class="sub-box" id="${sid}">
                 <button class="btn btn-del" style="background:#ccc; float:right" onclick="document.getElementById('${sid}').remove()">x</button>
-                <label>Sottotitolo / Dettaglio</label>
-                <input type="text" style="font-weight:bold; border:none; background:transparent" placeholder="Dettaglio...">
+                <label>Sottotitolo</label>
+                <input type="text" style="font-weight:bold; border:none; background:transparent" placeholder="[...">
                 <label style="margin-top:8px">Decisione e chi la attuerà</label>
-                <div contenteditable="true" style="min-height:2em; border:1px solid #ccc; border-radius:4px; padding:8px; font-size:10pt; font-family:inherit; background:white;" data-placeholder="Scrivi qui la decisione..."></div>
+                <div contenteditable="true" style="min-height:2em; border:1px solid #ccc; border-radius:4px; padding:8px; font-size:10pt; font-family:inherit; background:white;" data-placeholder=></div>
                         </div>
         `;
         document.getElementById('subs_' + parentId).insertAdjacentHTML('beforeend', html);
     }
 
-    function generaPDF() {
-    window.scrollTo(0, 0); // <-- Aggiungi questa riga all'inizio per resettare la visuale
+    function generaPDFProgrammatico() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const pageWidth = 210;
+    const margin = 14;
+    const contentWidth = pageWidth - (margin * 2);
+
+    // 1. Recupero dati dall'intestazione
+    const congregazione = document.getElementById('nome-congregazione').value || '';
+    const inputsHeader = document.querySelectorAll('#paper > .row input');
+    const dataAdunanza = inputsHeader[0]?.value || '---';
+    const luogo = inputsHeader[1]?.value || '---';
     
-    const body = document.getElementById('main-body');
-    const element = document.getElementById('paper');
+    const inputsDettagli = document.querySelectorAll('#paper > .row:nth-of-type(2) input');
+    const pregIniziale = inputsDettagli[0]?.value || '---';
+    const pregFinale = inputsDettagli[1]?.value || '---';
+    const relatore = inputsDettagli[2]?.value || '---';
 
-    const inputNome = document.getElementById('nome-congregazione');
-    const valoreNome = inputNome.value;
-    const span = document.createElement('span');
-    span.textContent = valoreNome;
-    inputNome.parentNode.replaceChild(span, inputNome);
+    // 2. Intestazione Superiore "App Style"
+    doc.setFillColor(240, 242, 245);
+    doc.rect(0, 0, pageWidth, 40, 'F'); // Fascia blu superiore
+    
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'bold');
+    doc.text(`ADUNANZA DEL CORPO DI ANZIANI DI ${congregazione.toUpperCase()}`, pageWidth / 2, 20, { align: 'center' });
+    doc.setDrawColor(180, 190, 200); // Colore grigio-azzurro molto tenue per la riga
+    doc.setLineWidth(0.3); // Spessore sottile professionale
+    doc.line(margin + 15, 25, pageWidth - margin - 15, 25); // Riga centrata sotto il titolo
+    
+    // Sottotitoli intestazione (bianchi su blu)
+    doc.setFontSize(9);
+    doc.text(`DATA: ${dataAdunanza}`, margin, 32);
+    doc.text(`LUOGO: ${luogo}`, pageWidth - margin, 32, { align: 'right' });
 
-    body.classList.add('exporting');
-    body.style.position = 'relative';
+    // Barra info secondarie (Preghiere/Relatore) sotto la fascia blu
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(8);
+    doc.text(`PREGHIERA INIZIALE: ${pregIniziale}`, margin, 48);
+    doc.text(`PREGHIERA FINALE: ${pregFinale}`, margin + 70, 48);
+    doc.text(`RELATORE: ${relatore}`, margin + 140, 48);
+    
+    let yPos = 55;
 
-    const opt = {
-        margin: [5, 5, 5, 5],
-        filename: 'Verbale_Adunanza_Anziani.pdf',
-        pagebreak: { mode: ['css', 'legacy'] },
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true,
-            /* Rimosse le righe width: 794 e windowWidth: 794 */
-            scrollX: 0,
-            scrollY: 0,
-            logging: false
-        },
-        jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait'
+    const checkSpace = (needed) => {
+        if (yPos + needed > 280) {
+            doc.addPage();
+            yPos = 20;
+            return true;
         }
+        return false;
     };
-    
-   
 
-const altezzaPagina = 1122;
-const margine = 40;
-const paperTop = element.getBoundingClientRect().top + window.scrollY;
+    const argomenti = document.querySelectorAll('.arg-card');
+    argomenti.forEach((arg, index) => {
+        const titolo = arg.querySelector('.title-line input').value || 'Senza Titolo';
+        const info = arg.querySelectorAll('.row input');
+        const fonti = info[0]?.value || '';
+        const incaricato = info[1]?.value || '';
+        const minuti = info[2]?.value || '';
 
-document.querySelectorAll('.sub-box').forEach(box => {
-    const boxTop = box.getBoundingClientRect().top + window.scrollY - paperTop;
-    const posizioneNellaPagina = boxTop % altezzaPagina;
-    if (posizioneNellaPagina + box.offsetHeight > altezzaPagina - margine) {
-        const br = document.createElement('div');
-        br.className = 'html2pdf__page-break';
-        br.style.pageBreakBefore = 'always';
-        const card = box.closest('.arg-card');
-        const primoSub = card.querySelector('.sub-box');
-        if (box === primoSub) {
-            card.parentNode.insertBefore(br, card);
-        } else {
-            box.parentNode.insertBefore(br, box);
+        const subs = arg.querySelectorAll('.sub-box');
+        
+               // --- NUOVA LOGICA DI ANCORAGGIO DINAMICO ---
+        let altezzaPrimoSottopunto = 0;
+        if (subs.length > 0) {
+            const primaDecisione = subs[0].querySelector('[contenteditable]').innerText;
+            const descSplit = doc.splitTextToSize(`Decisione: ${primaDecisione}`, contentWidth - 25);
+            // Calcolo altezza: 5mm per riga + 14mm di margini interni del riquadro
+            altezzaPrimoSottopunto = (descSplit.length * 5) + 14; 
         }
-    }
-});
 
-        setTimeout(() => {
-            html2pdf().set(opt).from(element).save().then(() => {
-            body.classList.remove('exporting');
-            body.style.position = '';
-            span.parentNode.replaceChild(inputNome, span);
-           document.querySelectorAll('.html2pdf__page-break').forEach(br => br.remove());
-            document.querySelectorAll('.sub-box').forEach(box => {
-                box.style.display = '';
-                box.style.width = '';
-                box.style.boxSizing = '';
-            });
+        // Ingombro totale: Card Titolo (22mm) + Spazio (6mm) + Primo Sottopunto
+        const ingombroInizialeNecessario = 22 + 6 + altezzaPrimoSottopunto;
+
+        if (yPos + ingombroInizialeNecessario > 280) {
+            doc.addPage();
+            yPos = 20; // Ricomincia dall'alto nella nuova pagina
+        }
+        // -------------------------------------------
+
+
+        // Card Argomento (Stile App)
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(245, 247, 250);
+        doc.roundedRect(margin, yPos, contentWidth, 24, 2, 2, 'FD');
+
+        doc.setFontSize(11);
+        doc.setTextColor(21, 101, 192);
+        doc.text(`${index + 1}. ${titolo.toUpperCase()}`, margin + 5, yPos + 8);
+
+        // Proporzioni richieste: Fonti (75%), Da (20%), Min (10% circa)
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        const colFonti = margin + 5;
+        const colIncaricato = margin + (contentWidth * 0.70);
+        const colMin = margin + (contentWidth * 0.90);
+
+        doc.text(`FONTI: ${fonti}`, colFonti, yPos + 17, { maxWidth: contentWidth * 0.65 });
+        doc.text(`DA: ${incaricato}`, colIncaricato, yPos + 17);
+        doc.text(`MIN: ${minuti}`, colMin, yPos + 17);
+
+        yPos += 30;
+
+        subs.forEach(sub => {
+            const sottotitolo = sub.querySelector('input').value;
+            const decisione = sub.querySelector('[contenteditable]').innerText;
+
+            const descSplit = doc.splitTextToSize(`Decisione: ${decisione}`, contentWidth - 20);
+            const heightBox = (descSplit.length * 5) + 15;
+
+            checkSpace(heightBox + 5);
+
+            // Riquadro leggero per Sottotitolo + Decisione
+            doc.setDrawColor(230, 230, 230);
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(margin + 5, yPos, contentWidth - 5, heightBox, 1, 1, 'S');
+            
+            // Linea azzurra laterale di enfasi (App Style)
+            doc.setDrawColor(52, 152, 219);
+            doc.setLineWidth(1);
+            doc.line(margin + 5, yPos, margin + 5, yPos + heightBox);
+
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(50, 50, 50);
+            doc.text(sottotitolo, margin + 10, yPos + 6);
+            
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(80, 80, 80);
+            doc.text(descSplit, margin + 10, yPos + 13);
+            
+            yPos += heightBox + 4;
         });
-        }, 500);
-    }
+
+        yPos += 6;
+    });
+
+    doc.save(`Verbale_Adunanza_${dataAdunanza.replace(/\s+/g, '_')}.pdf`);
+}
 
 
     function clona() {
