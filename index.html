@@ -1164,41 +1164,103 @@ function eliminaImg() {
     }
 }
 
-    function clona() {
-        const contenitoreHTML = document.getElementById('contenitore-argomenti').innerHTML;
-        const valori = [];
-        document.querySelectorAll('#paper input, #paper textarea').forEach(el => {
-            valori.push(el.value);
-        });
-
-        const htmlOriginale = document.documentElement.outerHTML;
-
-        const scriptRipristino = `<script>
-(function() {
-    var contenitoreHTML = ${JSON.stringify(contenitoreHTML)};
-    var valoriTutti = ${JSON.stringify(valori)};
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('contenitore-argomenti').innerHTML = contenitoreHTML;
-        var campi = document.querySelectorAll('#paper input, #paper textarea');
-        valoriTutti.forEach(function(val, i) {
-            if (campi[i]) campi[i].value = val;
-        });
-        window.onload = null;
-    });
-})();
-<\/script>`;
-
-        const htmlCompleto = htmlOriginale.replace('<script>\n    // Registrazione Service Worker', scriptRipristino + '\n<script>\n    // Registrazione Service Worker');
-
-        const blob = new Blob([htmlCompleto], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'OdG_Adunanza_Copia.html';
-        a.click();
-        URL.revokeObjectURL(url);
+    async function clona() {
+    const btn = document.querySelector('.btn-save');
+    let icona = "💾", testoOriginale = "Salva File";
+    
+    // Gestione visiva del pulsante (se esiste)
+    if (btn) {
+        icona = btn.querySelector('.icon') ? btn.querySelector('.icon').innerHTML : "💾";
+        testoOriginale = btn.innerText.replace(icona, "").trim();
+        btn.disabled = true;
+        btn.innerHTML = `<span class="icon">⌛</span> Preparazione...`;
+        btn.style.opacity = "0.7";
     }
+
+    const librerie = [
+        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+    ];
+
+    try {
+        let scriptsIncorporati = "";
+        
+        // Scarica le librerie per l'uso offline
+        for (const url of librerie) {
+            try {
+                const resp = await fetch(url);
+                if (resp.ok) {
+                    const code = await resp.text();
+                    scriptsIncorporati += `\n<script>\n${code}\n<\/script>\n`;
+                }
+            } catch (e) {
+                console.warn("Libreria non scaricata:", url);
+            }
+        }
+
+        // --- LA MAGIA: "Stampiamo" i valori nell'HTML ---
+        // Questo fissa i testi digitati direttamente negli attributi prima di copiare il codice
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.tagName === 'INPUT') {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    if (el.checked) el.setAttribute('checked', 'checked');
+                    else el.removeAttribute('checked');
+                } else {
+                    el.setAttribute('value', el.value); // Scrive il testo nell'attributo value
+                }
+            } else if (el.tagName === 'TEXTAREA') {
+                el.textContent = el.value; // Scrive il testo dentro i tag <textarea>
+            } else if (el.tagName === 'SELECT') {
+                Array.from(el.options).forEach(opt => {
+                    if (opt.selected) opt.setAttribute('selected', 'selected');
+                    else opt.removeAttribute('selected');
+                });
+            }
+        });
+
+        // Ora copiamo l'HTML, che includerà già tutti i valori compilati!
+        let htmlOriginale = document.documentElement.outerHTML;
+
+        // Pulizia: rimuoviamo i vecchi link esterni
+        librerie.forEach(url => {
+            const regex = new RegExp(`<script src="${url}"><\\/script>`, 'g');
+            htmlOriginale = htmlOriginale.replace(regex, "");
+        });
+
+        // Inseriamo le librerie scaricate
+        htmlOriginale = htmlOriginale.replace('</head>', scriptsIncorporati + '</head>');
+
+  // Evita che il clone crei una scheda vuota in automatico all'apertura
+       htmlOriginale = htmlOriginale.replace(/window\.onload\s*=\s*aggiungiArgomento;?/g, '// window.onload disabilitato');
+        
+        // Generazione del file (nessun script di ripristino necessario)
+        const blob = new Blob([htmlOriginale], { type: 'text/html' });
+        const urlBlob = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = urlBlob;
+        const dataOggi = new Date().toISOString().slice(0, 10);
+        a.download = `Backup_OdG_${dataOggi}_OFFLINE.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(urlBlob);
+
+    } catch (err) {
+        alert("Errore durante la creazione del file: " + err);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<span class="icon">${icona}</span> ${testoOriginale}`;
+            btn.style.opacity = "1";
+        }
+    }
+}
+
 
     window.onload = aggiungiArgomento;
     document.getElementById('nome-congregazione').addEventListener('input', function() {
