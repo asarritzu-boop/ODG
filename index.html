@@ -1241,26 +1241,109 @@ function eliminaImg() {
         const blob = new Blob([htmlOriginale], { type: 'text/html' });
         const urlBlob = URL.createObjectURL(blob);
         
+async function clona() {
+    const btn = document.querySelector('.btn-save');
+    let icona = "💾", testoOriginale = "Salva File";
+    
+    if (btn) {
+        const spanIcona = btn.querySelector('.icon');
+        icona = spanIcona ? spanIcona.innerHTML : "💾";
+        testoOriginale = btn.innerText.replace(icona, "").trim();
+        btn.disabled = true;
+        btn.innerHTML = `<span class="icon">⌛</span> Preparazione...`;
+    }
+
+    const librerie = [
+        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+    ];
+
+    try {
+        // 1. Fissiamo i valori attuali nei campi (Testi, Checkbox, Select)
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'radio')) {
+                el.checked ? el.setAttribute('checked', 'checked') : el.removeAttribute('checked');
+            } else if (el.tagName === 'TEXTAREA') {
+                el.textContent = el.value;
+            } else if (el.tagName === 'SELECT') {
+                Array.from(el.options).forEach(opt => opt.selected ? opt.setAttribute('selected', 'selected') : opt.removeAttribute('selected'));
+            } else {
+                el.setAttribute('value', el.value);
+            }
+        });
+
+        // 2. Prepariamo il codice delle librerie
+        let scriptsPerClone = "";
+        const scriptEsistenti = document.querySelectorAll('script[data-lib]');
+        
+        if (scriptEsistenti.length === 0) {
+            // Se siamo nell'originale online, scarichiamo le librerie
+            for (const url of librerie) {
+                try {
+                    const resp = await fetch(url);
+                    if (resp.ok) {
+                        const code = await resp.text();
+                        scriptsPerClone += `<script data-lib="true">${code}<\/script>\n`;
+                    }
+                } catch (e) { console.error("Errore download:", url); }
+            }
+        } else {
+            // Se siamo già in un clone, preleviamo le librerie già presenti
+            scriptEsistenti.forEach(s => {
+                scriptsPerClone += s.outerHTML + "\n";
+            });
+        }
+
+        // 3. Cloniamo l'intero documento
+        let docClone = document.documentElement.cloneNode(true);
+
+        // Pulizia: rimuoviamo i vecchi script CDN esterni per evitare conflitti
+        librerie.forEach(url => {
+            const vecchioScript = docClone.querySelector(`script[src="${url}"]`);
+            if (vecchioScript) vecchioScript.remove();
+        });
+
+        // Inseriamo le librerie incorporate nel <head> del clone
+        const head = docClone.querySelector('head');
+        head.insertAdjacentHTML('beforeend', scriptsPerClone);
+
+        // Reset pulsante nel clone
+        const btnClone = docClone.querySelector('.btn-save');
+        if (btnClone) {
+            btnClone.disabled = false;
+            btnClone.style.opacity = "1";
+            btnClone.innerHTML = `<span class="icon">${icona}</span> ${testoOriginale}`;
+        }
+
+        // 4. Disattivazione automatismi fastidiosi
+        let htmlFinale = docClone.outerHTML;
+        htmlFinale = htmlFinale.replace(/window\.onload\s*=\s*aggiungiArgomento;?/g, '// onload disattivato');
+        
+        // 5. Download
+        const blob = new Blob([htmlFinale], { type: 'text/html' });
+        const urlBlob = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = urlBlob;
-        const dataOggi = new Date().toISOString().slice(0, 10);
-        a.download = `Backup_OdG_${dataOggi}_OFFLINE.html`;
+        a.download = `OdG_Anziani_${new Date().toLocaleDateString().replace(/\//g, '-')}.html`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(urlBlob);
 
     } catch (err) {
-        alert("Errore durante la creazione del file: " + err);
+        alert("Errore durante il salvataggio: " + err);
     } finally {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = `<span class="icon">${icona}</span> ${testoOriginale}`;
-            btn.style.opacity = "1";
         }
     }
-}
-
+                    }
+        
 
     window.onload = aggiungiArgomento;
     document.getElementById('nome-congregazione').addEventListener('input', function() {
