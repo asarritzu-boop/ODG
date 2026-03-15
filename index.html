@@ -374,7 +374,7 @@ img.selected-img {
     function allegaDocumento(idArgomento) {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.pdf,.doc,.docx,.txt,.csv,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp';
+    input.accept = '.pdf,.doc,.docx,.dot,.dotx,.rtf,.txt,.csv,.xls,.xlsx,.xlsm,.xlt,.xltx,.ppt,.pptx,.pot,.potx,.pps,.ppsx,.odt,.ods,.odp,.odg,.odf,.pages,.numbers,.keynote,.zip,.rar,.7z,.tar,.gz,.jwpub,.jw,.jpg,.jpeg,.png,.gif,.webp,.bmp,.tiff,.svg';
     input.onchange = e => {
         const file = e.target.files[0];
         if (!file) return;
