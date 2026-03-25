@@ -1713,15 +1713,8 @@ if (vuolePassword && hashPassword) { // "hashPassword" qui contiene la VERA pass
                 bodyClone.style.visibility = 'visible';
                 bodyClone.style.display = '';
             }
-            // Rimuovi lo script di protezione password dal clone (non serve senza meta)
-            const scripts = docClone.querySelectorAll('script');
-            for (const s of scripts) {
-                if (s.textContent.includes('odg-password-hash') && s.textContent.includes('DOMContentLoaded')) {
-                    s.remove();
-                    break;
-                }
+           
             }
-        }
 
         // Reset pulsante nel clone
         const btnClone = docClone.querySelector('.btn-save');
