@@ -1504,6 +1504,8 @@ function eliminaImg() {
     async function clona() {
     const btn = document.querySelector('.btn-save');
     let icona = "💾", testoOriginale = "Salva File";
+        document.getElementById('fab-items').style.display = 'none';
+document.getElementById('fab-toggle').textContent = '☰';
     
     if (btn) {
         const spanIcona = btn.querySelector('.icon');
