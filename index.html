@@ -805,8 +805,7 @@ document.addEventListener('click', function(e) {
                     }
                 })();
           
-            } else if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
-                win.document.write(`<img src="${base64}" style="max-width:100%;display:block;margin:auto;" />`);
+            
             } else if (ext === 'txt') {
                 const testo = atob(base64.split(',')[1]);
                 win.document.write(`<pre style="font-family:sans-serif;padding:20px;">${testo}</pre>`);
