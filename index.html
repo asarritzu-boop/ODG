@@ -223,6 +223,17 @@ body.exporting [contenteditable] { border: none !important; background: transpar
    .allegato-item {
     cursor: pointer;
    }     
+        body:not(.exporting) [contenteditable] a {
+    cursor: text;
+}
+
+body:not(.exporting) [contenteditable] a:hover::after {
+    content: ' (doppio clic per aprire)';
+    font-size: 7pt;
+    color: #1976d2;
+    font-style: italic;
+    pointer-events: none;
+}
         .table-toolbar {
     position: absolute;
     background: #333;
