@@ -1005,6 +1005,22 @@ document.addEventListener('click', function(e) {
                         <a href="${base64}" download="${name}" class="btn btn-dl">⬇ Scarica il file</a>
                     </div>
                 </body></html>`);
+              } else if (ext === 'html' || ext === 'htm') {
+    win.close();
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:99999;display:flex;flex-direction:column;';
+    overlay.innerHTML = `
+        <div style="background:#1c1c1e;color:white;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <span style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${name}</span>
+            <button id="close-html-preview" style="background:#ff3b30;color:white;border:none;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;flex-shrink:0;margin-left:10px;">✕ Chiudi</button>
+        </div>
+        <iframe id="html-preview-frame" style="flex:1;border:none;background:white;"></iframe>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#close-html-preview').onclick = () => overlay.remove();
+    const frame = overlay.querySelector('#html-preview-frame');
+    const htmlContent = atob(base64.split(',')[1]);
+    const blob = new Blob([htmlContent], {type: 'text/html'});
+    frame.src = URL.createObjectURL(blob);
             } else {
                 win.document.write(`<p style="font-family:sans-serif;padding:20px;">Anteprima non disponibile per questo tipo di file.<br><a href="${base64}" download="${name}">Scarica il file</a></p>`);
             }
