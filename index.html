@@ -529,10 +529,8 @@ item.className = 'allegato-item';
 item.dataset.filedata = fileData;
 item.dataset.filename = fileName;
 item.style.cssText = 'display:inline-flex; align-items:center; background:#e3f2fd; padding:2px 8px; border-radius:10px; font-size:8pt; border:1px solid #2196f3; color:#1565c0;';
-item.innerHTML = `${['jpg','jpeg','png','gif','webp'].includes(fileName.split('.').pop().toLowerCase()) ? '🖼️' : '📄'} ${fileName} <span style="cursor:pointer; color:#c62828; margin-left:8px; font-weight:bold;">✕</span>`;
-item.querySelector('span').addEventListener('click', () => {
-    if (confirm(`Eliminare l'allegato "${fileName}"?`)) item.remove();
-});
+item.innerHTML = `${['jpg','jpeg','png','gif','webp'].includes(fileName.split('.').pop().toLowerCase()) ? '🖼️' : '📄'} ${fileName} <span style="cursor:pointer; color:#c62828; margin-left:8px; font-weight:bold;" onclick="if(confirm('Eliminare l\\'allegato?')) this.closest('.allegato-item').remove();">✕</span>`;
+
 contenitore.appendChild(item);
             } catch (err) {
                 alert(`Errore nella lettura di "${file.name}": ${err.message}`);
