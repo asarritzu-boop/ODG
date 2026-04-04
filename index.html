@@ -219,7 +219,11 @@ body:not(.exporting) [onclick*="aggiungiSottopunto"] {
 body.exporting .sub-box * { display: block; }
 [contenteditable]:empty:before { content: attr(data-placeholder); color: #999; }
 body.exporting [contenteditable] { border: none !important; background: transparent !important; padding: 2px 0 !important; }
-.table-toolbar {
+
+   .allegato-item {
+    cursor: pointer;
+   }     
+        .table-toolbar {
     position: absolute;
     background: #333;
     color: white;
