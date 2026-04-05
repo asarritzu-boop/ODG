@@ -1852,6 +1852,8 @@ if (vuolePassword && hashPassword) { // "hashPassword" qui contiene la VERA pass
             const el = docClone.querySelector('#' + id);
             if (el) el.remove();
         });
+        // Rimuovi TUTTI gli script data-lib già incorporati nel clone
+docClone.querySelectorAll('script[data-lib]').forEach(s => s.remove());
 
         // Inseriamo le librerie incorporate nel <head> del clone
         const head = docClone.querySelector('head');
