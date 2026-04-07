@@ -311,7 +311,25 @@ img.selected-img {
     color: #1565C0 !important; 
     font-weight: bold !important; 
 }
+textarea {
+    field-sizing: content;
+    min-height: 1lh;
+    resize: none;
+    overflow: hidden;
+    -webkit-appearance: none;     
+    box-sizing: border-box;       
+    line-height: 1.4;             
+    display: block;               
+    width: 100%;                  
+}
 
+#paper textarea {
+    field-sizing: content !important;
+    min-height: 1lh !important;
+    overflow: hidden !important;
+        border: none;
+    outline: none;
+}
     </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
