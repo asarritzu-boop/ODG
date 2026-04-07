@@ -2000,6 +2000,7 @@ function importaBackup() {
             document.getElementById('contenitore-argomenti').querySelectorAll('textarea').forEach(ta => {
     ta.style.height = 'auto';
     ta.style.height = ta.scrollHeight + 'px';
+                ta.style.color = '#1565C0';
 });
             document.getElementById('note-generali').innerHTML = dati.noteGenerali || '';
             
