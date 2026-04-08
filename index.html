@@ -650,7 +650,7 @@ const OdgCrypto = {
     const input = document.createElement('input');
     input.type = 'file';
     input.multiple = true;
-    input.accept = '.pdf,.doc,.docx,.txt,.csv,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.zip,.jwpub,.rar,.7z,.tar,.gz,.pages,.numbers,.keynote,.odt,.ods,.odp,.mp3,.mp4,.mov,.m4v,.aac,.wav';
+    input.setAttribute("accept", "*/*"); 
     input.onchange = async e => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
