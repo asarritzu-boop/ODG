@@ -1445,25 +1445,36 @@ doc.setTextColor(21, 101, 192);
     const bandaH = titoloH + 12;
     const spazioDopoB = 6; // spazio bianco fisso tra banda e data
 
-    doc.setFillColor(240, 242, 245);
-    doc.rect(0, 0, pageWidth, bandaH, 'F');
-    const yTitolo = (bandaH - titoloH) / 2 + lineaH;
-    doc.text(titoloLines, pageWidth / 2, yTitolo, { align: 'center', lineHeightFactor: 1.3 });
-    const yBase = bandaH + spazioDopoB;
+     doc.setFillColor(240, 242, 245);
+      // --- IMPOSTAZIONI MARGINI ---
+    const mLat = 10; // Margine laterale 10mm
+    const mSup = 10; // Margine superiore 10mm
+    const larghContenuto = pageWidth - (mLat * 2);
+    
+    // La banda non copre tutto il foglio ma rispetta i margini
+    doc.rect(mLat, mSup, larghContenuto, bandaH, 'F');
+
+    
+    const yTitoloPos = mSup + (bandaH - titoloH) / 2 + lineaH;
+    doc.text(titoloLines, pageWidth / 2, yTitoloPos, { align: 'center', lineHeightFactor: 1.3 });
+
+    // --- RESET PER INFO (Data, Luogo, ecc.) ---
+    doc.setTextColor(0, 0, 0); // Torna al nero per il resto del testo
+    const yBase = mSup + bandaH + spazioDopoB;
     const rH = 8; // altezza riga
     const sepColor = [200, 200, 200];
 
     // Riga 1 — DATA
     doc.setFontSize(8);
     doc.setFont(undefined, 'bold');
-    doc.setTextColor(0, 0, 0);
     doc.text('DATA:', pageWidth / 2 - doc.getTextWidth('DATA:  ' + dataAdunanza) / 2, yBase);
     doc.setFont(undefined, 'normal');
     doc.text(dataAdunanza, pageWidth / 2 - doc.getTextWidth('DATA:  ' + dataAdunanza) / 2 + doc.getTextWidth('DATA:  '), yBase);
 
     doc.setDrawColor(...sepColor);
     doc.setLineWidth(0.2);
-    doc.line(margin, yBase + 2, pageWidth - margin, yBase + 2);
+    // Linea orizzontale allineata ai nuovi margini laterali
+    doc.line(mLat, yBase + 2, pageWidth - mLat, yBase + 2);
 
     // Riga 2 — LUOGO
     const yR2 = yBase + rH;
@@ -1474,9 +1485,9 @@ doc.setTextColor(21, 101, 192);
 
     doc.setDrawColor(...sepColor);
     doc.setLineWidth(0.2);
-    doc.line(margin, yR2 + 2, pageWidth - margin, yR2 + 2);
+    doc.line(mLat, yR2 + 2, pageWidth - mLat, yR2 + 2);
 
-    // Riga 3 — PREGHIERE e RELATORE centrati dinamicamente
+    // Riga 3 — PREGHIERE e RELATORE
     const yR3 = yR2 + rH;
     doc.setFont(undefined, 'bold');
     const wPI = doc.getTextWidth('PREG. INIZIALE: ');
@@ -1488,27 +1499,32 @@ doc.setTextColor(21, 101, 192);
     const wREval = doc.getTextWidth(relatore);
     const totale = wPI + wPIval + 10 + wPF + wPFval + 10 + wRE + wREval;
     let xR3 = (pageWidth - totale) / 2;
+    
     doc.setFont(undefined, 'bold');
     doc.text('PREG. INIZIALE: ', xR3, yR3);
     doc.setFont(undefined, 'normal');
     doc.text(pregIniziale, xR3 + wPI, yR3);
+    
     xR3 += wPI + wPIval + 10;
     doc.setFont(undefined, 'bold');
     doc.text('PREG. FINALE: ', xR3, yR3);
     doc.setFont(undefined, 'normal');
     doc.text(pregFinale, xR3 + wPF, yR3);
+    
     xR3 += wPF + wPFval + 10;
     doc.setFont(undefined, 'bold');
     doc.text('RELATORE: ', xR3, yR3);
     doc.setFont(undefined, 'normal');
     doc.text(relatore, xR3 + wRE, yR3);
 
+    // Impostiamo la posizione di partenza per i punti dell'OdG
     let yPos = yR3 + 6;
 
+    // --- FUNZIONE SALTO PAGINA AGGIORNATA ---
     const checkSpace = (needed) => {
         if (yPos + needed > 283) {
             doc.addPage();
-            yPos = 14;
+            yPos = 10; // Ricomincia a 10mm dal bordo superiore nella nuova pagina
             return true;
         }
         return false;
