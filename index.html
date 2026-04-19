@@ -2497,10 +2497,19 @@ const TEMI = {
   '#c8c8c8': '#ffcc80', '#b4bec8': '#ffcc80',
 }
 };
+    document.querySelector('meta[name="theme-color"]')
+  .setAttribute('content', THEME_COLOR_META[nomeTema]);
 
 const ORDINE_TEMI = ['blu', 'bordeaux', 'verde', 'arancione'];
 const EMOJI_TEMI  = { blu: '🔵', bordeaux: '🔴', verde: '🟢', arancione: '🟠' };
-let temaCorrente = localStorage.getItem('tema') || 'blu';
+const THEME_COLOR_META = {
+  blu:       '#1565C0',
+  bordeaux:  '#800020',
+  verde:     '#1b5e20',
+  arancione: '#b34700',
+};
+    
+    let temaCorrente = localStorage.getItem('tema') || 'blu';
 
 function applicaTema(nomeTema) {
   // 1. Ripristina sempre il CSS blu originale
