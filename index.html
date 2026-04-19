@@ -2502,8 +2502,8 @@ const TEMI = {
 
 const ORDINE_TEMI = ['blu', 'bordeaux', 'verde', 'arancione'];
 const EMOJI_TEMI  = { blu: '🔵', bordeaux: '🔴', verde: '🟢', arancione: '🟠' };
+let temaCorrente = localStorage.getItem('tema') || 'blu';
 
-    
 function applicaTema(nomeTema) {
   // 1. Ripristina sempre il CSS blu originale
   document.querySelectorAll('style').forEach((tag, i) => { tag.innerHTML = CSS_ORIGINALE[i]; });
@@ -2520,8 +2520,6 @@ function applicaTema(nomeTema) {
     });
     document.querySelectorAll('[style]').forEach(el => {
       let s = el.getAttribute('style');
-            
-        
       for (const [da, a] of Object.entries(mappa)) s = s.replaceAll(da, a);
       el.setAttribute('style', s);
     });
@@ -2540,9 +2538,7 @@ function applicaTema(nomeTema) {
   el.style.borderColor = m ? (m['#2196f3'] || '#2196f3') : '#2196f3';
   el.style.color       = m ? (m['#1565c0'] || '#1565c0') : '#1565c0';
 });
-    
 }
-
 function cambiaTema() {
   const prossimo = ORDINE_TEMI[(ORDINE_TEMI.indexOf(temaCorrente) + 1) % ORDINE_TEMI.length];
   applicaTema(prossimo);
