@@ -2502,12 +2502,7 @@ const TEMI = {
 
 const ORDINE_TEMI = ['blu', 'bordeaux', 'verde', 'arancione'];
 const EMOJI_TEMI  = { blu: '🔵', bordeaux: '🔴', verde: '🟢', arancione: '🟠' };
-const THEME_COLOR_META = {
-  blu:       '#1565C0',
-  bordeaux:  '#800020',
-  verde:     '#1b5e20',
-  arancione: '#b34700',
-};
+
     
 function applicaTema(nomeTema) {
   // 1. Ripristina sempre il CSS blu originale
@@ -2525,7 +2520,7 @@ function applicaTema(nomeTema) {
     });
     document.querySelectorAll('[style]').forEach(el => {
       let s = el.getAttribute('style');
-            let temaCorrente = localStorage.getItem('tema') || 'blu';
+            
         
       for (const [da, a] of Object.entries(mappa)) s = s.replaceAll(da, a);
       el.setAttribute('style', s);
