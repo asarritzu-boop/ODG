@@ -2172,6 +2172,8 @@ document.addEventListener('click', function(e) {
 });
 
 function esportaBackup() {
+    document.getElementById('fab-items').style.display = 'none';   // ← aggiungi
+    document.getElementById('fab-toggle').innerHTML = '☰';
     // Salva solo i dati (JSON), senza librerie — file leggero
     const dati = {
         versione: 1,
@@ -2191,6 +2193,8 @@ function esportaBackup() {
 }
 
 function importaBackup() {
+    document.getElementById('fab-items').style.display = 'none';   // ← aggiungi
+    document.getElementById('fab-toggle').innerHTML = '☰';
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
