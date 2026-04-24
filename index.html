@@ -1315,6 +1315,20 @@ let tabellaAttiva = null;
 let cellaAttiva = null;
 let imgAttiva = null;
 let fileHandleSalvataggio = null;
+    // === AVVISO CHIUSURA NON SALVATA ===
+let modificheNonSalvate = false;
+document.addEventListener('input', () => { modificheNonSalvate = true; });
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-add, .btn-del, .btn-move, [onclick*="aggiungi"], [onclick*="elimina"], [onclick*="sposta"]')) {
+        modificheNonSalvate = true;
+    }
+});
+window.addEventListener('beforeunload', function(e) {
+    if (modificheNonSalvate) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 
 // ASCOLTATORE PER IL DOPPIO CLICK SUI LINK NELLE AREE MODIFICABILI
 document.addEventListener('dblclick', function(e) {
@@ -2106,6 +2120,7 @@ if ('showSaveFilePicker' in window && !isXiaomi) {
             }, 2000);
         }
         mostraToast('✅ File salvato con successo!', '#2e7d32');
+        modificheNonSalvate = false;
     } catch (err) {
         if (err.name !== 'AbortError') {
             // Errore reale, non annullamento utente
