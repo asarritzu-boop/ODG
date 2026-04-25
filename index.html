@@ -2515,10 +2515,11 @@ function stampaTestoInline(doc, element, xStart, yStart, maxWidth) {
             });
             currentY = doc.lastAutoTable.finalY + lineHeight;
             currentX = xStart;
-       } else {
+              } else {
     const tag = nodo.nodeName;
     const isBlock = (tag === 'DIV' || tag === 'P' || tag === 'LI');
-  // ── RIGA BIANCA: <div><br></div> ──────────────────────────────
+
+    // ── RIGA BIANCA: <div><br></div> ──────────────────────────────
     // Un blocco con un solo figlio <BR> = riga vuota.
     // Avanza di UN solo lineHeight invece di 3 (prima+BR+dopo).
     const isRigaVuota = isBlock &&
@@ -2531,6 +2532,8 @@ function stampaTestoInline(doc, element, xStart, yStart, maxWidth) {
         currentX = xStart;
         currentY += lineHeight;
     }
+    currentY += lineHeight;   // ← spazio della riga bianca
+    if (currentY > 283) { doc.addPage(); currentY = 14; }
     } else {
         // Vai a capo PRIMA del contenuto se è un blocco (tranne il primo)
         if (isBlock && currentX > xStart) {
