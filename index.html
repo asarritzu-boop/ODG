@@ -2518,18 +2518,19 @@ function stampaTestoInline(doc, element, xStart, yStart, maxWidth) {
        } else {
     const tag = nodo.nodeName;
     const isBlock = (tag === 'DIV' || tag === 'P' || tag === 'LI');
-
-    // ── RIGA BIANCA: <div><br></div> ──────────────────────────────
+  // ── RIGA BIANCA: <div><br></div> ──────────────────────────────
     // Un blocco con un solo figlio <BR> = riga vuota.
     // Avanza di UN solo lineHeight invece di 3 (prima+BR+dopo).
     const isRigaVuota = isBlock &&
-        nodo.childNodes.length === 1 &&
-        nodo.childNodes[0].nodeName === 'BR';
+        nodo.textContent.replace(/[\s\u00a0]/g, '') === '' && !nodo.querySelector('img, table')
 
     if (isRigaVuota) {
+    // Se c'è testo non ancora "terminato" (testo nudo senza div),
+    // prima chiudiamo quella riga, poi aggiungiamo la riga bianca
+    if (currentX > xStart) {
         currentX = xStart;
-        currentY += lineHeight;   // ← solo 1× invece di 3×
-        if (currentY > 283) { doc.addPage(); currentY = 14; }
+        currentY += lineHeight;
+    }
     } else {
         // Vai a capo PRIMA del contenuto se è un blocco (tranne il primo)
         if (isBlock && currentX > xStart) {
