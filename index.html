@@ -350,7 +350,11 @@ input,
     appearance: none !important;
     
 }
-
+/* Sostituisci il colore fisso con una variabile o una classe gestita dal tema */
+.allegato-item {
+    color: #1565C0; /* Colore di default */
+}
+        
     </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -2617,6 +2621,10 @@ function applicaTema(nomeTema) {
   const btn = document.getElementById('btnTema');
   if (btn) {
     btn.innerHTML = `<span class="icon">${EMOJI_TEMI[prossimo]}</span> Tema ${prossimo}`;
+      // Se decidi di usare le classi CSS per i temi
+document.querySelectorAll('.allegato-item').forEach(el => {
+    el.style.color = THEME_COLOR_META[nomeTema];
+});
   }
 }
 
