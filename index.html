@@ -2516,23 +2516,36 @@ function stampaTestoInline(doc, element, xStart, yStart, maxWidth) {
             currentY = doc.lastAutoTable.finalY + lineHeight;
             currentX = xStart;
        } else {
-            // Vai a capo PRIMA del contenuto se è un blocco (tranne il primo)
-            const tag = nodo.nodeName;
-            const isBlock = (tag === 'DIV' || tag === 'P' || tag === 'LI');
-            if (isBlock && currentX > xStart) {
-                currentX = xStart;
-                currentY += lineHeight;
-            }
-            // Ricorsione sui figli
-            Array.from(nodo.childNodes).forEach(processaNodo);
-       // Vai a capo DOPO il contenuto se è un blocco
-            if (isBlock) {
-                currentX = xStart;
-                currentY += lineHeight;
-                if (currentY > 283) { doc.addPage(); currentY = 14; }
-            
-            }
+    const tag = nodo.nodeName;
+    const isBlock = (tag === 'DIV' || tag === 'P' || tag === 'LI');
+
+    // ── RIGA BIANCA: <div><br></div> ──────────────────────────────
+    // Un blocco con un solo figlio <BR> = riga vuota.
+    // Avanza di UN solo lineHeight invece di 3 (prima+BR+dopo).
+    const isRigaVuota = isBlock &&
+        nodo.childNodes.length === 1 &&
+        nodo.childNodes[0].nodeName === 'BR';
+
+    if (isRigaVuota) {
+        currentX = xStart;
+        currentY += lineHeight;   // ← solo 1× invece di 3×
+        if (currentY > 283) { doc.addPage(); currentY = 14; }
+    } else {
+        // Vai a capo PRIMA del contenuto se è un blocco (tranne il primo)
+        if (isBlock && currentX > xStart) {
+            currentX = xStart;
+            currentY += lineHeight;
         }
+        // Ricorsione sui figli
+        Array.from(nodo.childNodes).forEach(processaNodo);
+        // Vai a capo DOPO il contenuto se è un blocco
+        if (isBlock) {
+            currentX = xStart;
+            currentY += lineHeight;
+            if (currentY > 283) { doc.addPage(); currentY = 14; }
+        }
+    }
+}
     }
 
     Array.from(element.childNodes).forEach(processaNodo);
