@@ -1388,7 +1388,7 @@ function scheduleAutosave() {
     autosaveTimer = setTimeout(eseguiAutosave, 1500);
 }
 
-document.addEventListener('input', scheduleAutosave);
+document.addEventListener('input', () => { modificheNonSalvate = true; scheduleAutosave(); });
 document.addEventListener('click', (e) => {
     if (e.target.closest('.btn-add, .btn-del, .btn-move, [onclick*="aggiungi"], [onclick*="elimina"], [onclick*="sposta"]'))
         scheduleAutosave();
